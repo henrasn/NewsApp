@@ -1,5 +1,7 @@
 package id.henra.news.network;
 
+import java.util.Map;
+
 import id.henra.news.model.news.DataModel;
 import rx.Observable;
 
@@ -8,11 +10,11 @@ import rx.Observable;
  */
 
 public class ApiManager extends BaseApiManager<ApiServices> {
-    public Observable<DataModel> requestNews(NetworkHandlerContract networkHandler, String page) {
-        return addHandler(getApiService().requestNews(page, getServerKey()), networkHandler);
+    public Observable<DataModel> requestNews(NetworkHandlerContract networkHandler, Map<String,String> query) {
+        return addHandler(getApiService().requestNews(query), networkHandler);
     }
 
-    public Observable<DataModel> requestHeadlines(NetworkHandlerContract networkHandler, String page) {
-        return addHandler(getApiService().requestHeadline(page, getServerKey()), networkHandler);
-    }
+//    public Observable<DataModel> requestHeadlines(NetworkHandlerContract networkHandler, String page) {
+//        return addHandler(getApiService().requestHeadline(page, getServerKey()), networkHandler);
+//    }
 }

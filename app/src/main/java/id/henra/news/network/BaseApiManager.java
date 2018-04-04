@@ -1,6 +1,8 @@
 package id.henra.news.network;
 
 import java.net.UnknownHostException;
+import java.util.HashMap;
+import java.util.Map;
 
 import retrofit2.HttpException;
 import rx.Observable;
