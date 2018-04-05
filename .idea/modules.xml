@@ -2,7 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://D:\AndroidProject\NonKantor\newstokped\News.iml" filepath="D:\AndroidProject\NonKantor\newstokped\News.iml" />
+      <module fileurl="file://$PROJECT_DIR$/News.iml" filepath="$PROJECT_DIR$/News.iml" />
+      <module fileurl="file://D:/AndroidProject/NonKantor/newstokped/News.iml" filepath="D:/AndroidProject/NonKantor/newstokped/News.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/newstokped.iml" filepath="$PROJECT_DIR$/newstokped.iml" />
     </modules>
