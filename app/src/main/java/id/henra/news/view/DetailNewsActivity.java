@@ -1,4 +1,4 @@
-package id.henra.news;
+package id.henra.news.view;
 
 import android.annotation.TargetApi;
 import android.graphics.Bitmap;
@@ -16,6 +16,7 @@ import android.widget.ProgressBar;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import id.henra.news.R;
 
 public class DetailNewsActivity extends AppCompatActivity {
 

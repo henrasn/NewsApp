@@ -2,4 +2,5 @@
 <resources>
     <string name="unFavorite">&#xf387;</string>
     <string name="favorite">&#xf388;</string>
+    <string name="check">&#xf120;</string>
 </resources>

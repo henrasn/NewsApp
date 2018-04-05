@@ -1,7 +1,6 @@
 package id.henra.news.adapter;
 
 import android.content.Context;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,54 +25,42 @@ import id.henra.news.utils.CustomFont;
  * Created by Henra Setia Nugraha on 04/04/2018.
  */
 
-public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class HeadlinesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private List<ArticlesItem> articlesItems;
-    private List<ArticlesItem> headlineItems;
     private Context context;
     private ItemClickListener clickListener;
     private String favoriteIcon;
     private String unFavoriteIcon;
-    private List<String> newsFavoriteItems = new ArrayList<>();
-    private List<String> headlinesFavoriteItems = new ArrayList<>();
+    private List<String> favoriteItems;
 
-
-    public NewsAdapter(Context context, ItemClickListener clickListener) {
+    public HeadlinesAdapter(Context context, ItemClickListener clickListener) {
         this.context = context;
         this.clickListener = clickListener;
         articlesItems = new ArrayList<>();
-        headlineItems = new ArrayList<>();
+        favoriteItems=new ArrayList<>();
         favoriteIcon = context.getString(R.string.favorite);
         unFavoriteIcon = context.getString(R.string.unFavorite);
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        if (viewType == 0) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_news, parent, false);
-            return new NewsViewHolder(view);
-        } else {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.headlines, parent, false);
-            return new HeadlineViewHolder(view);
-        }
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_news, parent, false);
+        return new HeadlinesViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        if (holder.getItemViewType() == 0) {
-            NewsViewHolder vh = (NewsViewHolder) holder;
+        HeadlinesViewHolder vh = (HeadlinesViewHolder) holder;
+        if (vh != null) {
             vh.title.setText(articlesItems.get(position).getTitle());
             Glide.with(context).load(articlesItems.get(position).getUrlToImage()).into(vh.image);
+        }
 
-            if (newsFavoriteItems.contains(articlesItems.get(position).getAuthor() + articlesItems.get(position).getTitle())) {
-                vh.favIcon.setText(favoriteIcon);
-            } else {
-                vh.favIcon.setText(unFavoriteIcon);
-            }
+        if (favoriteItems.contains(articlesItems.get(position).getAuthor() + articlesItems.get(position).getTitle())) {
+            vh.favIcon.setText(favoriteIcon);
         } else {
-            HeadlineViewHolder vh1 = (HeadlineViewHolder) holder;
-            vh1.adapter.setFavoriteItems(headlinesFavoriteItems);
-            vh1.adapter.setArticlesItems(headlineItems, false);
+            vh.favIcon.setText(unFavoriteIcon);
         }
     }
 
@@ -84,7 +71,7 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public int getItemViewType(int position) {
-        return position % 2;
+        return super.getItemViewType(position);
     }
 
     public ArticlesItem getItem(int position) {
@@ -97,19 +84,11 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         notifyDataSetChanged();
     }
 
-    public void setNewsFavoriteItems(List<String> newsFavoriteItems) {
-        this.newsFavoriteItems = newsFavoriteItems;
+    public void setFavoriteItems(List<String> favoriteItems) {
+        this.favoriteItems = favoriteItems;
     }
 
-    public void setHeadlinesFavoriteItems(List<String> headlinesFavoriteItems) {
-        this.headlinesFavoriteItems = headlinesFavoriteItems;
-    }
-
-    public void setHeadlineItems(List<ArticlesItem> headlineItems) {
-        this.headlineItems = headlineItems;
-    }
-
-    class NewsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    class HeadlinesViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         @BindView(R.id.image)
         ImageView image;
         @BindView(R.id.title)
@@ -117,7 +96,7 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         @BindView(R.id.favNewsIcon)
         CustomFont favIcon;
 
-        public NewsViewHolder(View itemView) {
+        public HeadlinesViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
             itemView.setOnClickListener(this);
@@ -131,30 +110,17 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         @OnClick(R.id.favNewsIcon)
         public void onFavClicked() {
             boolean isFavorites = favIcon.getText().toString().equals(context.getString(R.string.unFavorite));
+            if (isFavorites) favIcon.setText(favoriteIcon);
+            else favIcon.setText(unFavoriteIcon);
             itemClicked(R.id.favNewsIcon, isFavorites);
         }
 
         private void itemClicked(int viewId, Boolean is) {
             try {
-                clickListener.onItemClick(articlesItems.get(getAdapterPosition()), getAdapterPosition(), viewId, is, true);
+                clickListener.onItemClick(articlesItems.get(getAdapterPosition()), getAdapterPosition(), viewId, is,false);
             } catch (NullPointerException e) {
                 e.printStackTrace();
             }
-        }
-    }
-
-    class HeadlineViewHolder extends RecyclerView.ViewHolder {
-        @BindView(R.id.recyclerView)
-        RecyclerView recyclerView;
-        private HeadlinesAdapter adapter;
-
-        public HeadlineViewHolder(View itemView) {
-            super(itemView);
-            ButterKnife.bind(this, itemView);
-            adapter = new HeadlinesAdapter(itemView.getContext(), clickListener);
-            recyclerView.setHasFixedSize(true);
-            recyclerView.setLayoutManager(new LinearLayoutManager(itemView.getContext(), LinearLayoutManager.HORIZONTAL, false));
-            recyclerView.setAdapter(adapter);
         }
     }
 }

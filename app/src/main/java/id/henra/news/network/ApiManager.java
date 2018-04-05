@@ -14,7 +14,7 @@ public class ApiManager extends BaseApiManager<ApiServices> {
         return addHandler(getApiService().requestNews(query), networkHandler);
     }
 
-//    public Observable<DataModel> requestHeadlines(NetworkHandlerContract networkHandler, String page) {
-//        return addHandler(getApiService().requestHeadline(page, getServerKey()), networkHandler);
-//    }
+    public Observable<DataModel> requestHeadlines(NetworkHandlerContract networkHandler, Map<String,String> query) {
+        return addHandler(getApiService().requestHeadline(query), networkHandler);
+    }
 }

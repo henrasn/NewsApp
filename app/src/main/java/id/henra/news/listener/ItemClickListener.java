@@ -5,5 +5,5 @@ package id.henra.news.listener;
  */
 
 public interface ItemClickListener {
-    void onItemClick(Object data, int position, int viewId, Boolean is);
+    void onItemClick(Object data, int position, int viewId, Boolean is,boolean isNews);
 }

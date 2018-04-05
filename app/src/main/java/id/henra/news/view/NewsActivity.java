@@ -1,7 +1,6 @@
-package id.henra.news;
+package id.henra.news.view;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -12,20 +11,24 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import id.henra.news.R;
 import id.henra.news.adapter.NewsAdapter;
+import id.henra.news.contract.HeadlinesContract;
 import id.henra.news.contract.NewsContract;
 import id.henra.news.listener.ItemClickListener;
 import id.henra.news.model.news.ArticlesItem;
+import id.henra.news.presenter.HeadlinesPresenter;
 import id.henra.news.presenter.NewsPresenter;
 
-public class NewsActivity extends AppCompatActivity implements NewsContract.NewsView, SwipeRefreshLayout.OnRefreshListener, ItemClickListener {
+public class NewsActivity extends AppCompatActivity implements NewsContract.NewsView, SwipeRefreshLayout.OnRefreshListener, ItemClickListener, HeadlinesContract.HeadlinesView {
 
     @BindView(R.id.newsList)
     RecyclerView newsList;
     @BindView(R.id.swipeRefresh)
     SwipeRefreshLayout swipeRefresh;
 
-    private NewsContract.NewsPresenter presenter;
+    private NewsContract.NewsPresenter newsPresenter;
+    private HeadlinesContract.HeadlinesPresenter headlinesPresenter;
     private NewsAdapter adapter;
     private LinearLayoutManager layoutManager;
     private boolean isContinueLoad = false;
@@ -37,30 +40,33 @@ public class NewsActivity extends AppCompatActivity implements NewsContract.News
         ButterKnife.bind(this);
         setupPresenter();
         setupList();
+        swipeRefresh.setRefreshing(true);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        presenter.attachView(this);
+        newsPresenter.attachView(this);
+        headlinesPresenter.attachView(this);
     }
 
     @Override
     protected void onStop() {
-        presenter.detachView();
+        newsPresenter.detachView();
+        headlinesPresenter.detachView();
         super.onStop();
     }
 
     @Override
     public void onRefresh() {
         isContinueLoad = false;
-        presenter.getNewsList(isContinueLoad);
+        newsPresenter.getNewsList(isContinueLoad);
     }
 
     @Override
     public void showNewsList(List<ArticlesItem> articleItems) {
         if (articleItems != null) {
-            adapter.setFavoriteItems(presenter.getNewsFavorite());
+            adapter.setNewsFavoriteItems(newsPresenter.getNewsFavorite());
             adapter.setArticlesItems(articleItems, isContinueLoad);
         }
         swipeRefresh.setRefreshing(false);
@@ -72,7 +78,17 @@ public class NewsActivity extends AppCompatActivity implements NewsContract.News
     }
 
     @Override
-    public void onItemClick(Object data, int position, int viewId, Boolean is) {
+    public void showHeadlinesList(List<ArticlesItem> articleItems) {
+        adapter.setHeadlineItems(articleItems);
+    }
+
+    @Override
+    public void showHeadlinesError(String message) {
+
+    }
+
+    @Override
+    public void onItemClick(Object data, int position, int viewId, Boolean is, boolean isNews) {
         String url = null;
         ArticlesItem article = null;
         if (data instanceof ArticlesItem) {
@@ -84,15 +100,23 @@ public class NewsActivity extends AppCompatActivity implements NewsContract.News
             startActivity((new Intent(this, DetailNewsActivity.class)).putExtra("url", url));
 
         if (viewId == R.id.favNewsIcon && article != null) {
-            presenter.setNewsFavorite(article.getAuthor(), article.getTitle(), is);
-            adapter.setFavoriteItems(presenter.getNewsFavorite());
-            adapter.notifyItemChanged(position);
+            if (isNews) {
+                newsPresenter.setNewsFavorite(article.getAuthor(), article.getTitle(), is);
+                adapter.setNewsFavoriteItems(newsPresenter.getNewsFavorite());
+                adapter.notifyItemChanged(position);
+            } else {
+                headlinesPresenter.setHeadlinesFavorite(article.getAuthor(),article.getTitle(),is);
+                adapter.setHeadlinesFavoriteItems(headlinesPresenter.getNewsFavorite());
+            }
         }
     }
 
     private void setupPresenter() {
-        presenter = new NewsPresenter();
-        presenter.getNewsList(false);
+        headlinesPresenter = new HeadlinesPresenter();
+        headlinesPresenter.getHeadlinesList(false);
+
+        newsPresenter = new NewsPresenter();
+        newsPresenter.getNewsList(false);
     }
 
     private void setupList() {
@@ -113,7 +137,7 @@ public class NewsActivity extends AppCompatActivity implements NewsContract.News
             if (layoutManager.findFirstVisibleItemPosition() + recyclerView.getChildCount() == layoutManager.getItemCount() && dy > 0) {
                 if (!swipeRefresh.isRefreshing()) {
                     isContinueLoad = true;
-                    presenter.getNewsList(isContinueLoad);
+                    newsPresenter.getNewsList(isContinueLoad);
                     swipeRefresh.setRefreshing(true);
                 }
             }

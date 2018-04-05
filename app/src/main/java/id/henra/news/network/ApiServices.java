@@ -19,5 +19,5 @@ public interface ApiServices {
     Observable<DataModel> requestNews(@QueryMap Map<String ,String> query);
 
     @GET("top-headlines")
-    Observable<DataModel> requestHeadline(@Query("page") String page);
+    Observable<DataModel> requestHeadline(@QueryMap Map<String ,String> query);
 }

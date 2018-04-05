@@ -24,7 +24,7 @@ import id.henra.news.utils.PrefManager;
 public class NewsPresenter implements NewsContract.NewsPresenter {
 
     private final String NEWS_KEY = "news";
-    private final String HEADLINES_KEY = "headlines";
+    private final String HEADLINES_KEY = "item_headlines";
     private NewsContract.NewsView view;
     private NewsContract.NewsInteractor interactor;
     private int currentPage = 1;

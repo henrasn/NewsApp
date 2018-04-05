@@ -1,6 +1,7 @@
 package id.henra.news.contract;
 
 import java.util.List;
+import java.util.Map;
 
 import id.henra.news.model.news.ArticlesItem;
 import id.henra.news.model.news.DataModel;
@@ -14,14 +15,17 @@ public interface HeadlinesContract {
         void showHeadlinesList(List<ArticlesItem> articleItems);
         void showHeadlinesError(String message);
     }
-    
-    interface HeadlinesPresenter{
-        void getHeadlinesList(int page);
+
+    interface HeadlinesPresenter extends BasePresenter<HeadlinesView>{
+        void getHeadlinesList(boolean isContinueLoad);
         void onHeadlinesReceived(DataModel data);
         void onFailedReceiveHeadlines(Throwable e);
+
+        void setHeadlinesFavorite(String author, String title, boolean isFavorite);
+        List<String> getNewsFavorite();
     }
-    
+
     interface HeadlinesInteractor{
-        void getHeadlinesList(String page);
+        void getHeadlinesList(Map<String ,String> query);
     }
 }
