@@ -86,6 +86,7 @@ public class HeadlinesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     public void setFavoriteItems(List<String> favoriteItems) {
         this.favoriteItems = favoriteItems;
+        notifyDataSetChanged();
     }
 
     class HeadlinesViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {

@@ -15,12 +15,13 @@ import id.henra.news.R;
 import id.henra.news.adapter.NewsAdapter;
 import id.henra.news.contract.HeadlinesContract;
 import id.henra.news.contract.NewsContract;
+import id.henra.news.listener.HeadlinePaging;
 import id.henra.news.listener.ItemClickListener;
 import id.henra.news.model.news.ArticlesItem;
 import id.henra.news.presenter.HeadlinesPresenter;
 import id.henra.news.presenter.NewsPresenter;
 
-public class NewsActivity extends AppCompatActivity implements NewsContract.NewsView, SwipeRefreshLayout.OnRefreshListener, ItemClickListener, HeadlinesContract.HeadlinesView {
+public class NewsActivity extends AppCompatActivity implements NewsContract.NewsView, SwipeRefreshLayout.OnRefreshListener, ItemClickListener, HeadlinesContract.HeadlinesView, HeadlinePaging {
 
     @BindView(R.id.newsList)
     RecyclerView newsList;
@@ -67,6 +68,7 @@ public class NewsActivity extends AppCompatActivity implements NewsContract.News
     public void showNewsList(List<ArticlesItem> articleItems) {
         if (articleItems != null) {
             adapter.setNewsFavoriteItems(newsPresenter.getNewsFavorite());
+            adapter.setHeadlinesFavoriteItems(headlinesPresenter.getNewsFavorite());
             adapter.setArticlesItems(articleItems, isContinueLoad);
         }
         swipeRefresh.setRefreshing(false);
@@ -111,6 +113,11 @@ public class NewsActivity extends AppCompatActivity implements NewsContract.News
         }
     }
 
+    @Override
+    public void onItemLoaded(int page) {
+        headlinesPresenter.getHeadlinesList(true);
+    }
+
     private void setupPresenter() {
         headlinesPresenter = new HeadlinesPresenter();
         headlinesPresenter.getHeadlinesList(false);
@@ -122,6 +129,7 @@ public class NewsActivity extends AppCompatActivity implements NewsContract.News
     private void setupList() {
         swipeRefresh.setOnRefreshListener(this);
         adapter = new NewsAdapter(this, this);
+        adapter.setHeadlinePaging(this);
         layoutManager = new LinearLayoutManager(this);
 
         newsList.setHasFixedSize(true);

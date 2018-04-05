@@ -18,6 +18,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import id.henra.news.R;
+import id.henra.news.listener.HeadlinePaging;
 import id.henra.news.listener.ItemClickListener;
 import id.henra.news.model.news.ArticlesItem;
 import id.henra.news.utils.CustomFont;
@@ -36,6 +37,9 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private String unFavoriteIcon;
     private List<String> newsFavoriteItems = new ArrayList<>();
     private List<String> headlinesFavoriteItems = new ArrayList<>();
+    private int currentHeadlinePage = 1;
+    private HeadlinePaging headlinePaging;
+    HeadlinesAdapter headlinesAdapter;
 
 
     public NewsAdapter(Context context, ItemClickListener clickListener) {
@@ -72,8 +76,22 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             }
         } else {
             HeadlineViewHolder vh1 = (HeadlineViewHolder) holder;
+            int tempStart = (currentHeadlinePage * 5) - 5;
+            int start = tempStart == 0 ? 0 : tempStart - 1;
+            int end = (currentHeadlinePage * 5) - 1;
+            if (position > 1 && position > currentHeadlinePage) {
+                currentHeadlinePage = position - currentHeadlinePage;
+            }
             vh1.adapter.setFavoriteItems(headlinesFavoriteItems);
+//            if (!(end > headlineItems.size() - 1)) {
             vh1.adapter.setArticlesItems(headlineItems, false);
+//            } else
+//                vh1.adapter.setArticlesItems(headlineItems.subList(start, headlineItems.size() - 1), false);
+
+            if (headlinePaging != null) {
+                headlinePaging.onItemLoaded(currentHeadlinePage);
+            }
+            headlinesAdapter = vh1.adapter;
         }
     }
 
@@ -103,10 +121,17 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     public void setHeadlinesFavoriteItems(List<String> headlinesFavoriteItems) {
         this.headlinesFavoriteItems = headlinesFavoriteItems;
+        if (headlinesAdapter != null) {
+            headlinesAdapter.setFavoriteItems(headlinesFavoriteItems);
+        }
     }
 
     public void setHeadlineItems(List<ArticlesItem> headlineItems) {
-        this.headlineItems = headlineItems;
+        this.headlineItems.addAll(headlineItems);
+    }
+
+    public void setHeadlinePaging(HeadlinePaging headlinePaging) {
+        this.headlinePaging = headlinePaging;
     }
 
     class NewsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -114,6 +139,7 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         ImageView image;
         @BindView(R.id.title)
         TextView title;
+
         @BindView(R.id.favNewsIcon)
         CustomFont favIcon;
 
@@ -141,11 +167,13 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 e.printStackTrace();
             }
         }
+
     }
 
     class HeadlineViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.recyclerView)
         RecyclerView recyclerView;
+
         private HeadlinesAdapter adapter;
 
         public HeadlineViewHolder(View itemView) {
